@@ -1,0 +1,278 @@
+---
+title: "Analyzing How Result of the 2019 Canadian Federal Election is Affected"
+author: "Shuxian Cao"
+date: "21 December 2020"
+output:
+  bookdown::pdf_document2:
+    latex_engine: lualatex
+notice: "@*"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+library(tidyverse)
+library(dplyr)
+library(knitr)
+library(ggplot2)
+library(ggpubr)
+
+# Loading in the cleaned survey Data
+election_survey <- read_csv("election_data.csv")
+
+# Loading in the cleaned census Data
+gss_census <- read_csv("gss.csv")
+```
+
+# Information
+
+**Topic:** Analyzing How Result of the 2019 Canadian Federal Election is Affected
+
+**Author:** Shuxian Cao
+
+**Date:** December 9, 2020
+
+**Code and data supporting this analysis is available at:**
+
+
+# Abstract
+
+
+
+# Keywords
+
+Observational Study, Post Stratification, Step-wise Selection, 2019 Canadian Election, Liberal Party
+
+# Introduction
+
+In the past 2019 Canadian Federal Election, the Liberal Party, which is led by Prime Minister Justin Trudeau, eventually resulted in a minority government instead of the majority one (Clarke & Levett, 2019) due to the lost of 20 seats in the Cabinet, while its strongest competitor, the Conservative party, gained 26 more seats than the 2015 election for its official opposition (Cecco, 2019). Despite the decreasing pattern in the Cabinet, the Liberal Party also lost the Canadian General Public significantly during the recent election (Clarke & Levett, 2019), ending up with 33.1% in vote share (‘Party standing’, 2019). The Conservative party, on the other hand, had 34.4% supporters throughout Canada (‘Party standing’, 2019). It is worth noting that although what the Liberals and the Conservatives claimed on their platforms seemed to be interchangeable (Urback, 2019), the plans they announced (for example, the welcome towards Syrian refugees) (Cecco, 2019) meant differently to the individual citizens. Hence, the question of whether the result of the 2019 Canadian Federal Election will change if the general public is now allowed to directly vote for the party they support is raised for further analysis. This paper analyzed the factors that might influence the result of the 2019 election based on a hypothesis that there would be a difference if “everyone” votes for the election.
+
+
+
+# Methodology
+
+## Data
+
+
+
+## Model
+
+The final model is: 
+$$
+log(\frac{p}{1-p}) = \beta_0 + \beta_1 X_{1_{likelyvote}} + \beta_2 X_{2_{Unlikelyvote}} + \beta_3 X_{3_{notvote}} + \beta_4 X_{4_{BornCA}} + \beta_5 X_{5_{belowhigh}} + \beta_6 X_{6_{postsecond}}
+$$
+$$
++ \beta_7 X_{7_{University}} + \beta_8 X_{8_{Age25to34}} + \beta_9 X_{9_{Age35to44}} + \beta_{10} X_{10_{Age45to54}} + \beta_{11} X_{11_{Age55to64}} + \beta_{12} X_{12_{Age65to74}} + \beta_{13} X_{13_{Age75above}} + \epsilon,
+$$
+
+\newpage
+
+# Results
+
+```{r Fit Model, include = FALSE}
+# Model With all variables
+full_model <- glm(vote_liberal ~ Likely_to_Vote + Bornin_Canada + Education + Age + Income + Sex, data = election_survey, family =  "binomial")
+
+# Backward Elimination with AIC
+step(full_model, direction = "backward")
+
+# Model with Likely_to_Vote, Bornin_Canada, Education and Age (AIC 26044)
+final_model <- glm(vote_liberal ~ Likely_to_Vote + Bornin_Canada + Education + Age, data = election_survey, family =  "binomial")
+
+# Summary Table for the Final Model
+summary(final_model)
+```
+
+```{r table1}
+# Visualize AIC
+model_name <- c("full_model", "final_model")
+aic_value <- c(26058.46, 26044.41)
+aic_table <- data.frame(model_name, aic_value)
+kable(aic_table, align = "c", format = "markdown", col.names = c("Model", "AIC"),
+      caption = "Summary - AIC Score of Potential Models")
+```
+
+After building a logistic regression model `full_model` with all variables from the `election_survey` data set, a backward elimination with AIC (Chee, 2020) is applied to the `full_model` in order to find a parsimonious model. To be more specific, the AIC of the `final_model` which includes four variables: Likely_to_Vote, Bornin_Canada, Education and Age, drops from 26058 to 26044 by the elimination in Table \@ref(tab:table1).
+
+```{r table2}
+# Visualize the Summary Table
+kable(broom::tidy(final_model), align = "c", format = "markdown", digits = 3,
+      col.names = c("Term", "Estimate", "Std. Error", "Test Statistic", "P-Value"),
+      caption = "Summary - the Final Election Logistic Regression Model")
+```
+
+Table \@ref(tab:table2) summarizes the estimated values of intercept $\hat{\beta_0}$ and slopes $\hat{\beta_i}$ (for i = 1,...,13) as well as standard errors, test statistics and p-values for the `final_model`, which is chosen to predict the proportion of Liberal voters in the past 2019 Canadian Federal Election. Thus, the fitted logistic model is shown below.
+
+$$
+log(\frac{\hat{p}}{1-\hat{p}}) = -0.829 - 0.050 X_{1_{likelyvote}} - 16.596 X_{2_{Unlikelyvote}} - 16.737 X_{3_{notvote}} - 0.230 X_{4_{BornCA}}
+$$
+$$
+ - 0.272 X_{5_{belowhigh}} - 0.025 X_{6_{postsecond}} + 0.442 X_{7_{University}} - 0.086 X_{8_{Age25to34}} - 0.028 X_{9_{Age35to44}}
+$$
+$$
+ - 0.047 X_{10_{Age45to54}} +  0.034 X_{11_{Age55to64}} + 0.144 X_{12_{Age65to74}} + 0.146 X_{13_{Age75above}},
+$$
+
+```{r table3}
+estimation_in_logodds <- final_model %>%
+  predict(newdata = gss_census)
+
+estimation <- exp(estimation_in_logodds)/(1+exp(estimation_in_logodds))
+
+predicted_prop_by_post <- gss_census %>%
+  mutate(predicted_prop = estimation*n) %>%
+  summarise(predict = sum(predicted_prop)/sum(n))
+
+kable(predicted_prop_by_post, format = "markdown", digits = 3, align = "c", 
+      caption = "The Predicted Proportion of Voters for Liberal Party")
+```
+
+The proportion of voters for the Liberal Party, with an equation of ${\hat{y}}^{PS} = \frac{\sum{N_j{\hat{y}_j}}}{\sum{N_j}}$ (Caetano, 2020), is estimated to be **0.269**, meaning that there are less than one third voters is going to vote for the Liberal Party. This prediction is based on our post-stratification analysis of the proportion of voters in favor of the Republican Party models by a logistic regression model, `survey_model`, which accounted for `age`, `labforce` (i.e employment status), `sex`, `census region`, and `race`.
+
+```{r Piechart for bornin_canada}
+vote0_born <- election_survey %>%
+  filter(vote_liberal == 0) %>%
+  group_by(Bornin_Canada) %>%
+  summarise(counts = n(), .groups = 'drop') %>%
+  mutate(prop_vote = round(counts/sum(counts), 4))
+
+vote1_born <- election_survey %>%
+  filter(vote_liberal == 1) %>%
+  group_by(Bornin_Canada) %>%
+  summarise(counts = n(), .groups = 'drop') %>%
+  mutate(prop_vote = round(counts/sum(counts), 4))
+
+vote0_born_pie <- ggplot(vote0_born, aes(x = "", y = prop_vote, fill = Bornin_Canada)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  theme_void() +  
+  labs(title = "If Born in Canada when vote_liberal = 0")
+
+vote1_born_pie <- ggplot(vote1_born, aes(x = "", y = prop_vote, fill = Bornin_Canada)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  theme_void() +  
+  labs(title = "If Born in Canada when vote_liberal = 1")
+
+ggarrange(vote0_born_pie, vote1_born_pie)
+```
+&nbsp;
+
+Describe
+
+&nbsp;
+
+```{r Piechart for Age}
+vote0_age <- election_survey %>%
+  filter(vote_liberal == 0) %>%
+  group_by(Age) %>%
+  summarise(counts = n(), .groups = 'drop') %>%
+  mutate(prop_vote = round(counts/sum(counts), 4))
+
+vote1_age <- election_survey %>%
+  filter(vote_liberal == 1) %>%
+  group_by(Age) %>%
+  summarise(counts = n(), .groups = 'drop') %>%
+  mutate(prop_vote = round(counts/sum(counts), 4))
+
+vote0_age_pie <- ggplot(vote0_age, aes(x = "", y = prop_vote, fill = Age)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  theme_void() +  
+  labs(title = "Age Group when vote_liberal = 0")
+
+vote1_age_pie <- ggplot(vote1_age, aes(x = "", y = prop_vote, fill = Age)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  theme_void() +  
+  labs(title = "Age Group when vote_liberal = 1")
+
+ggarrange(vote0_age_pie, vote1_age_pie)
+```
+&nbsp;
+
+Describe
+
+&nbsp;
+
+```{r Piechart for Education}
+vote0_edu <- election_survey %>%
+  filter(vote_liberal == 0) %>%
+  group_by(Education) %>%
+  summarise(counts = n(), .groups = 'drop') %>%
+  mutate(prop_vote = round(counts/sum(counts), 4))
+
+vote1_edu <- election_survey %>%
+  filter(vote_liberal == 1) %>%
+  group_by(Education) %>%
+  summarise(counts = n(), .groups = 'drop') %>%
+  mutate(prop_vote = round(counts/sum(counts), 4))
+
+vote0_edu_pie <- ggplot(vote0_edu, aes(x = "", y = prop_vote, fill = Education)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  theme_void() +  
+  labs(title = "Education Level when vote_liberal = 0")
+
+vote1_edu_pie <- ggplot(vote1_edu, aes(x = "", y = prop_vote, fill = Education)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  theme_void() +  
+  labs(title = "Education Level when vote_liberal = 1")
+
+ggarrange(vote0_edu_pie, vote1_edu_pie)
+```
+
+Describe
+
+# Discussion
+
+## Summary
+
+
+
+## Conclusions
+
+
+
+## Weaknesses
+
+
+
+## Next Steps
+
+
+
+# References
+
+Intro：
+
+Cecco, L. (2019). Canada elections: Trudeau wins narrow victory to form minority government. In The 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Guardian. Retrieved December 5, 2020 from https://www.theguardian.com/world/2019/oct/22/
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; canada-elections-justin-trudeau-wins-narrow-victory-to-form-minority-government
+
+Clarke, S. & Levett, C. (2019). Canada election 2019: full results. In The Guardian. Retrieved December 5,
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2020 from https://www.theguardian.com/world/2019/oct/22/canada-election-2019-full-results.
+
+Party standings. (2019). In CBC News. Retrieved December 5, 2020 from https://newsinteractives.cbc.ca/elections/federal/2019/results/
+
+Urback, R. (2019). What's the difference between the Conservative and Liberal platforms? The colour: 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Robyn Urback. In CBC News.  Retrieved December 5, 2020 from https://www.cbc.ca/
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; news/opinion/policy-platforms-1.5298859.
+
+Calculate post prop: 
+
+Caetano,S.J. (2020). STA304: Multilevel Regression & Poststratification. Pg.4.
+
+Backward Elimination Code:
+Chee, S., S. (2020). STA302H1F/1001HF Autumn 2020 Assignment # 3. Pg.3.
+
+
+
+# Appendix
+

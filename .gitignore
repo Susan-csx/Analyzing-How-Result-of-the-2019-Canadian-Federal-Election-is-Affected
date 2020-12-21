@@ -37,3 +37,15 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# Survey Data
+election_data_clean.R
+2019 Canadian Election Study - Online Survey v1.0.dta
+election_data.csv
+
+# Census Data
+gss_cleaning.R
+AAugxPL8.csv
+gss.csv
+gss_dict.txt
+gss_labels.txt
