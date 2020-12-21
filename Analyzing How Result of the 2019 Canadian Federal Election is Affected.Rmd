@@ -39,11 +39,11 @@ https://github.com/Susan-csx/Analyzing-How-Result-of-the-2019-Canadian-Federal-E
 
 # Abstract
 
-
+The 2019 Canadian Federal Election turns out that the Liberal Party eventually won a minority government with less seats in the Cabinet as well as a lower percentage of vote share than its strongest competitor (‘Party standing’, 2019), the Conservative Party. This paper will be observing how the election results will be affected by the differences among voters, with a target population based on the entire Canadian population. In addition, a prediction on proportion of the potential Liberal Party voters will also be made based on their vote intentions, birthplace, age groups and education levels. In order to start the analysis, an election data set obtained by the 2019 Canadian Election Survey (CES) and a census data set from 2013 Canadian General Social Surveys (GSS) in Statistics Canada are selected for building a logistic regression model. The result shows that the Liberal Party might not win the 2019 Canadian Federal Election if everyone in Canada votes due to the low estimated proportion of voting the Liberals.
 
 # Keywords
 
-Observational Study, Post Stratification, Step-wise Selection, 2019 Canadian Election, Liberal Party
+Observational Study, Post Stratification, Step-wise Selection, 2019 Canadian Election, Liberal Party, Education
 
 # Introduction
 
