@@ -227,9 +227,6 @@ ggarrange(vote0_edu_pie, vote1_edu_pie)
 
 Six Pie-charts in Figure \@ref(fig:fig1), \@ref(fig:fig2), and \@ref(fig:fig3) depict patterns of how voters' birthplace, age groups, and education levels might influence the voters' choice of Liberal Party, using the explanatory variables of the logistic regression `final_model`: `Bornin_Canada`, `Age` and `Education`.
 
-
-the relationships between the voters’ choice and number of voters in the 2020 election, grouped by some of the independent variables in the logistic survey_model, sex, labforce, census_region and race.
-
 # Discussion
 
 ## Summary
