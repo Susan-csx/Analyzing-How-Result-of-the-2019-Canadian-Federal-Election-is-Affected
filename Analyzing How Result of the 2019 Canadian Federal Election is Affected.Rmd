@@ -36,10 +36,9 @@ gss_census <- read_csv("gss.csv")
 
 https://github.com/Susan-csx/Analyzing-How-Result-of-the-2019-Canadian-Federal-Election-is-Affected.git
 
-
 # Abstract
 
-The 2019 Canadian Federal Election turns out that the Liberal Party eventually won a minority government with less seats in the Cabinet as well as a lower percentage of vote share than its strongest competitor (‘Party standing’, 2019), the Conservative Party. This paper will be observing how the election results will be affected by the differences among voters, with a target population based on the entire Canadian population. In addition, a prediction on proportion of the potential Liberal Party voters will also be made based on their vote intentions, birthplace, age groups and education levels. In order to start the analysis, an election data set obtained by the 2019 Canadian Election Survey (CES) and a census data set from 2013 Canadian General Social Surveys (GSS) in Statistics Canada are selected for building a logistic regression model. The result shows that the Liberal Party might not win the 2019 Canadian Federal Election if everyone in Canada votes due to the low estimated proportion of voting the Liberals.
+The 2019 Canadian Federal Election turns out that the Liberal Party eventually won a minority government with less seats in the Cabinet as well as a lower percentage of vote share than its strongest competitor (‘Party standing’, 2019), the Conservative Party. This paper will be observing how the election results will be affected by the differences among voters, with a target population based on the entire Canadian population. In addition, a prediction on proportion of the potential Liberal Party voters will also be made based on their vote intentions, birthplace, age groups and education levels. In order to start the analysis, an election data set obtained by the 2019 Canadian Election Survey (CES) (Stephenson, Harell, Rubenson & Loewen, 2020) and a census data set from 2013 Canadian General Social Surveys (GSS) (Statistics Canada, 2013) are selected for building a logistic regression model. The result shows that the Liberal Party might not win the 2019 Canadian Federal Election if "everyone" in Canada votes due to the low estimated proportion of voting the Liberals.
 
 # Keywords
 
@@ -47,9 +46,11 @@ Observational Study, Post Stratification, Step-wise Selection, 2019 Canadian Ele
 
 # Introduction
 
-In the past 2019 Canadian Federal Election, the Liberal Party, which is led by Prime Minister Justin Trudeau, eventually resulted in a minority government instead of the majority one (Clarke & Levett, 2019) due to the lost of 20 seats in the Cabinet, while its strongest competitor, the Conservative party, gained 26 more seats than the 2015 election for its official opposition (Cecco, 2019). Despite the decreasing pattern in the Cabinet, the Liberal Party also lost the Canadian General Public significantly during the recent election (Clarke & Levett, 2019), ending up with 33.1% in vote share (‘Party standing’, 2019). The Conservative party, on the other hand, had 34.4% supporters throughout Canada (‘Party standing’, 2019). It is worth noting that although what the Liberals and the Conservatives claimed on their platforms seemed to be interchangeable (Urback, 2019), the plans they announced (for example, the welcome towards Syrian refugees) (Cecco, 2019) meant differently to the individual citizens. Hence, the question of whether the result of the 2019 Canadian Federal Election will change if the general public is now allowed to directly vote for the party they support is raised for further analysis. This paper analyzed the factors that might influence the result of the 2019 election based on a hypothesis that there would be a difference if “everyone” votes for the election.
+In the past 2019 Canadian Federal Election, the Liberal Party, which is led by Prime Minister Justin Trudeau, eventually resulted in a minority government instead of the majority one (Clarke & Levett, 2019) due to the lost of 20 seats in the Cabinet, while its strongest competitor, the Conservative party, gained 26 more seats than the 2015 election for its official opposition (Cecco, 2019). Despite the decreasing pattern in the Cabinet, the Liberal Party also lost the Canadian General Public significantly during the recent election (Clarke & Levett, 2019), ending up with 33.1% in vote share (‘Party standing’, 2019). The Conservative party, on the other hand, had 34.4% supporters throughout Canada (‘Party standing’, 2019). It is worth noting that although what the Liberals and the Conservatives claimed on their platforms seemed to be interchangeable (Urback, 2019), the plans they announced (for example, the welcome towards Syrian refugees) (Cecco, 2019) meant differently to the individual citizens. Hence, the question of whether the result of the 2019 Canadian Federal Election will change if the general public is now allowed to directly vote for the party they support is raised for further analysis. This paper analyzed the factors that might influence the result of the 2019 election based on a hypothesis that there would be a difference if "everyone" votes for the election.
 
+In order to form a better prediction on the proportion of Liberal voters if "everyone" in Canada votes, a post-stratification analysis is provided, allowing people to be more confident "in the validity of our inferences about population parameters of interest" (Barboza & Williams, 2005). To be more specific, since both raw data sets from CES and GSS given for the analysis are unstratified, post-stratification analysis can be used to obtain more significant estimators (Thompson & Wu, 2015).
 
+This paper analyzed how the results of the 2019 Canadian Federal Election will be affected based on two data sets from either CES or GSS. Both data sets themselves, post-stratification method applied on the GSS census data as well as the model used for predicting the potential proportion of Liberal voters will be discussed in the Methodology section (Section 5). Graphs and tables will be presented in the Results Section (Section 6) for visualizing the relationship between vote choices and the voters' birthplace, age groups and education level, while the actual meaning of results and the further improvement on this study will be provided in the Discussion Section (Section 7). For the last section, there are references for a more detailed check.
 
 # Methodology
 
@@ -66,6 +67,8 @@ $$
 $$
 + \beta_7 X_{7_{University}} + \beta_8 X_{8_{Age25to34}} + \beta_9 X_{9_{Age35to44}} + \beta_{10} X_{10_{Age45to54}} + \beta_{11} X_{11_{Age55to64}} + \beta_{12} X_{12_{Age65to74}} + \beta_{13} X_{13_{Age75above}} + \epsilon,
 $$
+
+
 
 \newpage
 
@@ -133,7 +136,7 @@ kable(predicted_prop_by_post, format = "markdown", digits = 3, align = "c",
       caption = "The Predicted Proportion of Voters for Liberal Party")
 ```
 
-Based on the 2019 Canadian Election Survey (CES) and the 2013 Canadian General Social Surveys (GSS), ${\hat{y}}^{PS} = \frac{\sum{N_j{\hat{y}_j}}}{\sum{N_j}}$ (Caetano, 2020) can be used for calculating the predicted proportion of voters for the Liberal Party, which results in an estimation of **0.269** in Table \@ref(tab:table3) below. That is to say, 26.9% of people are estimated to vote for the Liberal Party after the post-stratification analysis of the proportion of Liberal Party voters modeled by a logistic regression model, which accounted for `Likely_to_Vote`, `Bornin_Canada`, `Education` and `Age`.
+Based on the 2019 Canadian Election Survey (CES) (Stephenson, Harell, Rubenson & Loewen, 2020) and the 2013 Canadian General Social Surveys (GSS) (Statistics Canada, 2013), ${\hat{y}}^{PS} = \frac{\sum{N_j{\hat{y}_j}}}{\sum{N_j}}$ (Caetano, 2020) can be used for calculating the predicted proportion of voters for the Liberal Party, which results in an estimation of **0.269** in Table \@ref(tab:table3) below. That is to say, 26.9% of people are estimated to vote for the Liberal Party after the post-stratification analysis of the proportion of Liberal Party voters modeled by a logistic regression model, which accounted for `Likely_to_Vote`, `Bornin_Canada`, `Education` and `Age`.
 
 &nbsp;
 
@@ -247,7 +250,36 @@ Six Pie-charts in Figure \@ref(fig:fig1), \@ref(fig:fig2), and \@ref(fig:fig3) d
 
 # References
 
+## Data Sets & User's Guide
+
+General social survey on Social Identity (cycle 27), 2013. (2013).  In Statistics Canada. Retrieved 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; December 5, 2020 from https://sda-artsci-utoronto-ca.myaccess.library.utoronto.ca/
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cgi-bin/sda/hsda?harcsda4+gss27v2
+
+Burns, M. (2015). General Social Survey Cycle 27: Social Identity Public Use Microdata File 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Documentation and User’s Guide. In Statistics Canada. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieved  December 5, 2020 from https://sda-artsci-utoronto-ca.myaccess.library. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; utoronto.ca/sdaweb/dli2/gss/gss27v2/more_doc/GSS27ENgidV2.pdf
+
+Stephenson, L., B., Harell, A., Rubenson, D. & Loewen, P., J. (2020). 2019 Canadian Election Study - 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Online Survey. https://doi.org/10.7910/DVN/DUS88V, Harvard Dataverse, V1
+
+
+## Other References
+
 Intro：
+
+Barboza, I. & Williams R. (2005). Post-stratification and Response Bias in Survey Data with Applications
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in Political Science. In Michigan State University. Retrieved December 10, 2020 from
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; https://msu.edu/~barbozag/Web/poststrat.pdf
 
 Cecco, L. (2019). Canada elections: Trudeau wins narrow victory to form minority government. In The 
 
@@ -261,6 +293,8 @@ Clarke, S. & Levett, C. (2019). Canada election 2019: full results. In The Guard
 
 Party standings. (2019). In CBC News. Retrieved December 5, 2020 from https://newsinteractives.cbc.ca/elections/federal/2019/results/
 
+Thompson, M. & Wu, C,. B. (2015). ICSA Book Series in Statistics: Sampling Theory and Practice. ISBN 978-3-030-44246-0. Pg. 38.
+
 Urback, R. (2019). What's the difference between the Conservative and Liberal platforms? The colour: 
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Robyn Urback. In CBC News.  Retrieved December 5, 2020 from https://www.cbc.ca/
@@ -273,8 +307,4 @@ Caetano,S.J. (2020). STA304: Multilevel Regression & Poststratification. Pg.4.
 
 Backward Elimination Code:
 Chee, S., S. (2020). STA302H1F/1001HF Autumn 2020 Assignment # 3. Pg.3.
-
-
-
-# Appendix
 
