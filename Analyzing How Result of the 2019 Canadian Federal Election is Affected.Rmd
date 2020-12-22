@@ -1,7 +1,7 @@
 ---
 title: "Analyzing How Result of the 2019 Canadian Federal Election is Affected"
 author: "Shuxian Cao"
-date: "21 December 2020"
+date: "22 December 2020"
 output:
   bookdown::pdf_document2:
     latex_engine: lualatex
@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 library(tidyverse)
 library(dplyr)
 library(knitr)
+library(table1)
 library(ggplot2)
 library(ggpubr)
 
@@ -30,7 +31,7 @@ gss_census <- read_csv("gss.csv")
 
 **Author:** Shuxian Cao
 
-**Date:** December 9, 2020
+**Date:** December 22, 2020
 
 **Code and data supporting this analysis is available at:**
 
@@ -60,7 +61,9 @@ This paper analyzed how the results of the 2019 Canadian Federal Election will b
 
 ## Model
 
-The final model is: 
+Multiple logistic regression with post-stratification is chosen for modeling the likelihood of the Liberal Party winning the 2019 Canadian Federal Election based on the 2019 CES data set since the response variable is binary. To satisfy the requirement of a parsimonious model (Chen, Hu & Yang, n.d.), the analysis starts with a `full_model` with all five explanatory variables from the election survey data set (CES), providing an AIC value of 26058.46. After applying the backward elimination selection with AIC, the AIC value of the `final_model` is 26044.41 (\@ref(tab:table1)). According to Bevan's introduction on Akaike information criterion, the lower the AIC, the better the model fits (Bevans, 2020). Thus, two categorical variables `Income` and `Sex` are removed from five initial predictor variables, `Likely_to_Vote`, `Bornin_Canada`, `Education`, `Age`, `Income` and `Sex` which match the ones in the 2013 GSS census data set.
+
+The final multiple logistic regression model, which is run by R, is shown below:
 $$
 log(\frac{p}{1-p}) = \beta_0 + \beta_1 X_{1_{likelyvote}} + \beta_2 X_{2_{Unlikelyvote}} + \beta_3 X_{3_{notvote}} + \beta_4 X_{4_{BornCA}} + \beta_5 X_{5_{belowhigh}} + \beta_6 X_{6_{postsecond}}
 $$
@@ -68,7 +71,7 @@ $$
 + \beta_7 X_{7_{University}} + \beta_8 X_{8_{Age25to34}} + \beta_9 X_{9_{Age35to44}} + \beta_{10} X_{10_{Age45to54}} + \beta_{11} X_{11_{Age55to64}} + \beta_{12} X_{12_{Age65to74}} + \beta_{13} X_{13_{Age75above}} + \epsilon,
 $$
 
-
+where the log odds ration formula $log(\frac{p}{1-p})$ on the left-hand side is formed by $log$ (natural logarithm), $p$ (proportion of voting the Liberal Party in 2019 Canadian Federal Election) and $\frac{1}{1-p}$ (the "odd ratio") form a notation: $log(\frac{p}{1-p})$. On the right-hand side, $\beta_0$ is the intercept term when all the predictor variables $X_i = 0$ (for i from 1 to 13), while each $X_i$ above is an explanatory dummy variable in the final logistic regression model. That is to say, all the predictor variables are categorical, which take a value of 0 or 1. Moreover, each corresponding $\beta_i$ for i = 1,...,13 are the mean difference in the log odds ratio between $X_i = 0$ and $X_i = 1$, while keeping all the other predictors fixed. For example, $\beta_1$ indicates the average difference of voters' intention in the log odds ratio between "likely to vote" and other intention like "unlikely to vote. At last, $\epsilon$ represents the error term of the model.
 
 \newpage
 
@@ -95,20 +98,33 @@ summary(final_model)
 model_name <- c("full_model", "final_model")
 aic_value <- c(26058.46, 26044.41)
 aic_table <- data.frame(model_name, aic_value)
-kable(aic_table, align = "c", format = "markdown", col.names = c("Model", "AIC"),
+kable(aic_table, align = "c", format = "markdown", col.names = c("**Model**", "**AIC**"),
       caption = "Summary - AIC Score of Potential Models")
 ```
 
 After building a logistic regression model `full_model` with all variables from the `election_survey` data set, a backward elimination with AIC (Chee, 2020) is applied to the `full_model` in order to find a parsimonious model. To be more specific, the AIC of the `final_model` which includes four variables: Likely_to_Vote, Bornin_Canada, Education and Age, drops from 26058 to 26044 by the elimination in Table \@ref(tab:table1).
 
+```{r, include = FALSE}
+# Baseline Characteristic
+table1(~Likely_to_Vote + Bornin_Canada + Education + Age, data = election_survey)
+```
+
 ```{r table2}
+predictor <- c("**Likely_to_Vote**", "Certain to vote", "Likely to vote", "Unlikely to vote", "Will not vote", "**Bornin_Canada**", "No", "Yes", "**Education**", "Above High", "Below High", "Post-secondary", "University", "**Age**", "15 to 24", "25 to 34", "35 to 44", "45 to 54", "55 to 64", "65 to 74", "75 and above")
+value <- c(" ", "18269 (74.3%)", "3342 (13.6%)", "1060 (4.3%)", "1909 (7.8%)", " ", "3223 (13.1%)", "21357 (86.9%)", " ", "8730 (35.5%)", "1152 (4.7%)", "5273 (21.5%)", "	9425 (38.3%)", " ", "1168 (4.8%)", "4141 (16.8%)", "4442 (18.1%)", "4237 (17.2%)", "5159 (21.0%)", "4295 (17.5%)", "1138 (4.6%)")
+baseline_table <- data.frame(predictor, value)
+kable(baseline_table, align = "c", format = "markdown", col.names = c(" ", "**Overall (N=24580)**"),
+      caption = "Baseline Characteristics of the data")
+```
+
+```{r table3}
 # Visualize the Summary Table
 kable(broom::tidy(final_model), align = "c", format = "markdown", digits = 3,
-      col.names = c("Term", "Estimate", "Std. Error", "Test Statistic", "P-Value"),
+      col.names = c("**Term**", "**Estimate**", "**Std. Error**", "**Test Statistic**", "**P-Value**"),
       caption = "Summary - the Final Election Logistic Regression Model")
 ```
 
-Additionally, Table \@ref(tab:table2) summarizes the estimated values of intercept $\hat{\beta_0}$ and slopes $\hat{\beta_i}$ (for i = 1,...,13) as well as standard errors, test statistics and p-values for the `final_model`, which is chosen to predict the proportion of Liberal voters in the past 2019 Canadian Federal Election. Thus, the fitted logistic model is shown below.
+Additionally, Table \@ref(tab:table3) summarizes the estimated values of intercept $\hat{\beta_0}$ and slopes $\hat{\beta_i}$ (for i = 1,...,13) as well as standard errors, test statistics and p-values for the `final_model`, which is chosen to predict the proportion of Liberal voters in the past 2019 Canadian Federal Election. Thus, the fitted logistic model is shown below.
 
 $$
 log(\frac{\hat{p}}{1-\hat{p}}) = -0.829 - 0.050 X_{1_{likelyvote}} - 16.596 X_{2_{Unlikelyvote}} - 16.737 X_{3_{notvote}} - 0.230 X_{4_{BornCA}}
@@ -120,9 +136,7 @@ $$
  - 0.047 X_{10_{Age45to54}} +  0.034 X_{11_{Age55to64}} + 0.144 X_{12_{Age65to74}} + 0.146 X_{13_{Age75above}},
 $$
 
-\newpage
-
-```{r table3}
+```{r table4}
 estimation_in_logodds <- final_model %>%
   predict(newdata = gss_census)
 
@@ -132,13 +146,13 @@ predicted_prop_by_post <- gss_census %>%
   mutate(predicted_prop = estimation*n) %>%
   summarise(predict = sum(predicted_prop)/sum(n))
 
-kable(predicted_prop_by_post, format = "markdown", digits = 3, align = "c", 
+kable(predicted_prop_by_post, format = "markdown", digits = 3, align = "c", col.names = "**predict**",
       caption = "The Predicted Proportion of Voters for Liberal Party")
 ```
 
-Based on the 2019 Canadian Election Survey (CES) (Stephenson, Harell, Rubenson & Loewen, 2020) and the 2013 Canadian General Social Surveys (GSS) (Statistics Canada, 2013), ${\hat{y}}^{PS} = \frac{\sum{N_j{\hat{y}_j}}}{\sum{N_j}}$ (Caetano, 2020) can be used for calculating the predicted proportion of voters for the Liberal Party, which results in an estimation of **0.269** in Table \@ref(tab:table3) below. That is to say, 26.9% of people are estimated to vote for the Liberal Party after the post-stratification analysis of the proportion of Liberal Party voters modeled by a logistic regression model, which accounted for `Likely_to_Vote`, `Bornin_Canada`, `Education` and `Age`.
+Based on the 2019 Canadian Election Survey (CES) (Stephenson, Harell, Rubenson & Loewen, 2020) and the 2013 Canadian General Social Surveys (GSS) (Statistics Canada, 2013), ${\hat{y}}^{PS} = \frac{\sum{N_j{\hat{y}_j}}}{\sum{N_j}}$ (Caetano, 2020) can be used for calculating the predicted proportion of voters for the Liberal Party, which results in an estimation of **0.269** in Table \@ref(tab:table4) below. That is to say, 26.9% of people are estimated to vote for the Liberal Party after the post-stratification analysis of the proportion of Liberal Party voters modeled by a logistic regression model, which accounted for `Likely_to_Vote`, `Bornin_Canada`, `Education` and `Age`.
 
-&nbsp;
+\newpage
 
 ```{r fig1, fig.cap = "How Birthplace Affects the Voters' Choice of Liberal Party"}
 vote0_born <- election_survey %>%
@@ -157,13 +171,15 @@ vote0_born_pie <- ggplot(vote0_born, aes(x = "", y = prop_vote, fill = Bornin_Ca
   geom_bar(width = 1, stat = "identity", color = "white") +
   coord_polar("y", start = 0) +
   theme_void() +  
-  labs(title = "If Born in Canada when vote_liberal = 0")
+  labs(title = "If Born in Canada when vote_liberal = 0") +
+  scale_fill_brewer(palette="Purples")
 
 vote1_born_pie <- ggplot(vote1_born, aes(x = "", y = prop_vote, fill = Bornin_Canada)) +
   geom_bar(width = 1, stat = "identity", color = "white") +
   coord_polar("y", start = 0) +
   theme_void() +  
-  labs(title = "If Born in Canada when vote_liberal = 1")
+  labs(title = "If Born in Canada when vote_liberal = 1") +
+  scale_fill_brewer(palette="Purples")
 
 ggarrange(vote0_born_pie, vote1_born_pie)
 ```
@@ -187,13 +203,15 @@ vote0_age_pie <- ggplot(vote0_age, aes(x = "", y = prop_vote, fill = Age)) +
   geom_bar(width = 1, stat = "identity", color = "white") +
   coord_polar("y", start = 0) +
   theme_void() +  
-  labs(title = "Age Group when vote_liberal = 0")
+  labs(title = "Age Group when vote_liberal = 0") +
+  scale_fill_brewer(palette="Purples")
 
 vote1_age_pie <- ggplot(vote1_age, aes(x = "", y = prop_vote, fill = Age)) +
   geom_bar(width = 1, stat = "identity", color = "white") +
   coord_polar("y", start = 0) +
   theme_void() +  
-  labs(title = "Age Group when vote_liberal = 1")
+  labs(title = "Age Group when vote_liberal = 1") +
+  scale_fill_brewer(palette="Purples")
 
 ggarrange(vote0_age_pie, vote1_age_pie)
 ```
@@ -217,13 +235,15 @@ vote0_edu_pie <- ggplot(vote0_edu, aes(x = "", y = prop_vote, fill = Education))
   geom_bar(width = 1, stat = "identity", color = "white") +
   coord_polar("y", start = 0) +
   theme_void() +  
-  labs(title = "Education Level when vote_liberal = 0")
+  labs(title = "Education Level when vote_liberal = 0") +
+  scale_fill_brewer(palette="Purples")
 
 vote1_edu_pie <- ggplot(vote1_edu, aes(x = "", y = prop_vote, fill = Education)) +
   geom_bar(width = 1, stat = "identity", color = "white") +
   coord_polar("y", start = 0) +
   theme_void() +  
-  labs(title = "Education Level when vote_liberal = 1")
+  labs(title = "Education Level when vote_liberal = 1") +
+  scale_fill_brewer(palette="Purples")
 
 ggarrange(vote0_edu_pie, vote1_edu_pie)
 ```
@@ -266,7 +286,7 @@ Burns, M. (2015). General Social Survey Cycle 27: Social Identity Public Use Mic
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; utoronto.ca/sdaweb/dli2/gss/gss27v2/more_doc/GSS27ENgidV2.pdf
 
-Stephenson, L., B., Harell, A., Rubenson, D. & Loewen, P., J. (2020). 2019 Canadian Election Study - 
+Stephenson, L.B., Harell, A., Rubenson, D. & Loewen, P.J. (2020). 2019 Canadian Election Study - 
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Online Survey. https://doi.org/10.7910/DVN/DUS88V, Harvard Dataverse, V1
 
@@ -291,9 +311,13 @@ Clarke, S. & Levett, C. (2019). Canada election 2019: full results. In The Guard
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2020 from https://www.theguardian.com/world/2019/oct/22/canada-election-2019-full-results.
 
-Party standings. (2019). In CBC News. Retrieved December 5, 2020 from https://newsinteractives.cbc.ca/elections/federal/2019/results/
+Party standings. (2019). In CBC News. Retrieved December 5, 2020 from https://newsinteractives.cbc.ca/
 
-Thompson, M. & Wu, C,. B. (2015). ICSA Book Series in Statistics: Sampling Theory and Practice. ISBN 978-3-030-44246-0. Pg. 38.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; elections/federal/2019/results/
+
+Thompson, M. & Wu, C.B. (2015). ICSA Book Series in Statistics: Sampling Theory and Practice. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ISBN 978-3-030-44246-0. Pg. 38.
 
 Urback, R. (2019). What's the difference between the Conservative and Liberal platforms? The colour: 
 
@@ -303,8 +327,27 @@ Urback, R. (2019). What's the difference between the Conservative and Liberal pl
 
 Calculate post prop: 
 
-Caetano,S.J. (2020). STA304: Multilevel Regression & Poststratification. Pg.4.
+Caetano, S.J. (2020). STA304: Multilevel Regression & Poststratification. Pg.4.
 
 Backward Elimination Code:
-Chee, S., S. (2020). STA302H1F/1001HF Autumn 2020 Assignment # 3. Pg.3.
+
+Chee, S.S. (2020). STA302H1F/1001HF Autumn 2020 Assignment # 3. Pg.3.
+
+Model:
+
+Bevans, R. (2020). An introduction to the Akaike information criterion. In Scribber. Retrieved 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; December 10, 2020 from https://www.scribbr.com/statistics/akaike-information-criterion/.
+
+Chen, H.W., Hu, X. & Yang, Z.C. (n.d.). Model Selection for Linear Regression Model. Retrieved 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   December 10, 2020 from https://jbhender.github.io/Stats506/F17/Projects/Group21_Model
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  _Selection.html
+
+Result:
+
+Horn, B. (2013). RColorBrewer Palettes. In Applied R Code. Retrieved from
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; http://applied-r.com/rcolorbrewer-palettes/
 
