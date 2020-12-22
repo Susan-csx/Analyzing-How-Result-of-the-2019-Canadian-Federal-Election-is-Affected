@@ -71,7 +71,7 @@ Hence, `Sex`, `Income`, `Age`, `Education`, `Likely_to_Vote` and `Bornin_Canada`
 
 Compared to the multiple linear regression which is used for numeric prediction, multiple logistic regression with post-stratification is chosen for modeling the likelihood of the Liberal Party winning the 2019 Canadian Federal Election based on the 2019 CES data set since the response variable is binary. That is to say, `vote_liberal` is a discrete binary response variable that will be equal to 1 if the respondent votes for the Liberal Party and 0 otherwise. Moreover, the post-stratification analysis helps to obtain more significant estimators (Thompson & Wu, 2015) by stratifying observations into different groups. 
 
-To satisfy the requirement of a parsimonious model (Chen, Hu & Yang, n.d.), the analysis starts with a `full_model` with all five explanatory variables from the election survey data set (CES), providing an AIC value of 26058.46. After applying the backward elimination selection with AIC, the AIC value of the `final_model` is 26044.41 (Table \@ref(tab:table1)). According to Bevan's introduction on Akaike information criterion, the lower the AIC, the better the model fits (Bevans, 2020). Thus, two categorical variables `Income` and `Sex` are removed from five initial predictor variables, `Likely_to_Vote`, `Bornin_Canada`, `Education`, `Age`, `Income` and `Sex` which match the ones in the 2013 GSS census data set. 
+To satisfy the requirement of a parsimonious model (Chen, Hu & Yang, n.d.), the analysis starts with a `full_model` with all five explanatory variables from the election survey data set (CES), providing an Akaike Information Criterion (AIC) value of 26058.46. After applying the backward elimination selection with AIC, the AIC value of the `final_model` is 26044.41 (Table \@ref(tab:table1)). According to Bevan's introduction on Akaike information criterion, the lower the AIC, the better the model fits (Bevans, 2020). Thus, two categorical variables `Income` and `Sex` are removed from five initial predictor variables, `Likely_to_Vote`, `Bornin_Canada`, `Education`, `Age`, `Income` and `Sex` which match the ones in the 2013 GSS census data set. 
 
 The final multiple logistic regression model, which is run by R, is shown below:
 $$
@@ -166,7 +166,7 @@ kable(predicted_prop_by_post, format = "markdown", digits = 3, align = "c", col.
       caption = "The Predicted Proportion of Voters for Liberal Party")
 ```
 
-Based on the 2019 Canadian Election Survey (CES) (Stephenson, Harell, Rubenson & Loewen, 2020) and the 2013 Canadian General Social Surveys (GSS) (Statistics Canada, 2013), ${\hat{y}}^{PS} = \frac{\sum{N_j{\hat{y}_j}}}{\sum{N_j}}$ (Caetano, 2020) can be used for calculating the predicted proportion of voters for the Liberal Party, which results in an estimation of **0.269** in Table \@ref(tab:table4) below. That is to say, 26.9% of people are estimated to vote for the Liberal Party after the post-stratification analysis of the proportion of Liberal Party voters modeled by a logistic regression model, which accounted for `Likely_to_Vote`, `Bornin_Canada`, `Education` and `Age`.
+Based on the 2019 Canadian Election Survey (CES) (Stephenson, Harell, Rubenson & Loewen, 2020) and the 2013 Canadian General Social Surveys (GSS) (Statistics Canada, 2013), ${\hat{y}}^{PS} = \frac{\sum{N_j{\hat{y}_j}}}{\sum{N_j}}$ can be used for calculating the predicted proportion of voters for the Liberal Party, which results in an estimation of **0.269** in Table \@ref(tab:table4) below. That is to say, 26.9% of people are estimated to vote for the Liberal Party after the post-stratification analysis of the proportion of Liberal Party voters modeled by a logistic regression model, which accounted for `Likely_to_Vote`, `Bornin_Canada`, `Education` and `Age`.
 
 \newpage
 
@@ -270,7 +270,7 @@ Six Pie-charts in Figure \@ref(fig:fig1) depict patterns of how voters' birthpla
 
 ## Summary
 
-
+The purpose of this paper is to figure out what factors might influence the result of 2019 Canadian Federal Election as well as a prediction on the likelihood of the Liberal Party winning the election if “everyone” in Canada votes. The datasets used in the study are `election_survey` and `gss_census`. The previous data set is retrieved from the 2019 Canadian Election Survey (CES), being used to build a multiple logistic regression model.  The second data set, on the other hand, is from the 2013 General Social Survey (GSS) held by Statistics Canada for post-stratification and predicting the proportion of Liberal voters based on the model `election_survey` provides. By a backward elimination with Akaike Information Criterion (AIC), the explanatory variables within the logistic regression model is narrowed down to a number of 4. That is, after the first step, `Likely_to_Vote`, `Bornin_Canada`, `Education`, `Age` are kept in the `final_model` for further prediction. In the Result Section, a prediction on the potential proportion of voters for the Liberal Party in the election is made, along with tables and figures indicating the estimated values and the relationships between the response variable and each predictors.
 
 ## Conclusions
 
@@ -278,11 +278,13 @@ Six Pie-charts in Figure \@ref(fig:fig1) depict patterns of how voters' birthpla
 
 ## Weaknesses
 
-
+Since all the variables in the original `election_survey` data set are categorical, including both response and explanatory variables, a generalization is made to some of them so that they can match with the variables in the `gss_census` data set for prediction. For example, `Education` is categorized into 4 groups instead of remaining in 11 categories. Thus, only the patterns of joint variables can be observed from the model. That is, a multicollinearity might presented within the `final_model` if all variables perform a similar trend to the data (Frost, 2020). Then, overfitting is also a worth-noting issue in the logistic regression (AmiyaRanjanRout, 2020), meaning that extra variables exist within the model without being detected by the backward elimination with AIC.
 
 ## Next Steps
 
+With the weakness discussed above, there are two major issues need to be solved in the future. First of all, variance inflation factor (VIF) can be used to check the multicollinearity between the predictors within the `final_model`, meaning that there might be potential correlation embedded among the explanatory variables. Secondly, in order to satisfy the requirement of a parsimonious model with the least variables included, backward elimination with Bayesian Information Criterion (BIC) can be applied to the `full-model` with all variables inside since both of them help recognize whether there is any predictors can be removed from the `final_model` provided by the AIC, since BIC penalizes more on additional variables than AIC (Kassambara, 2018). On the other hand, partial F-test can also further simplify the `final_model` in the previous sections by figuring out whether the unexplained variation increased or decreased when some predictors are added to or deleted from the model. What is also important is that other potential numeric factors might also affect the election result. For example, the satisfaction rate on how the Liberal Party dealt with emergency may be one of the confounders for the `final_model`. Thus, a consideration on what type of modeling will be better fitted for both categorical and numerically continuous variables should be made for the next step.
 
+\newpage
 
 # References
 
@@ -324,6 +326,10 @@ Allaire, J.J., Atkins, A., Cheng, J., Chang, W., Iannone, R., Luraschi, J., McPh
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  Retrieved December 5, 2020 from https://github.com/rstudio/rmarkdown.
 
+AmiyaRanjanRout. (2020). Advantages and Disadvantages of Logistic Regression. Retrieved November 02,
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2020, from https://www.geeksforgeeks.org/advantages-and-disadvantages-of-logistic-regression/
+
 Barboza, I. & Williams R. (2005). Post-stratification and Response Bias in Survey Data with Applications
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in Political Science. In Michigan State University. Retrieved December 10, 2020 from
@@ -360,6 +366,11 @@ François, R., Henry, L., Müller, K. & Wickham, H. (2020). dplyr: A Grammar of 
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; https://CRAN.R-project.org/package=dplyr.
 
+Frost, J. (2020). Multicollinearity in Regression Analysis: Problems, Detection, and Solutions. Retrieved 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; December 20, 2020 from https://statisticsbyjim.com/regression/multicollinearity-in-regression
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -analysis/.
+
 Horn, B. (2013). RColorBrewer Palettes. In Applied R Code. Retrieved December 16, 
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2020 from http://applied-r.com/rcolorbrewer-palettes/.
@@ -376,9 +387,15 @@ Kassambara. (2017). Plot One Variable: Frequency Graph, Density Distribution and
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; essentials/133-plot-one-variable-frequency-graph-density-distribution-and-more/.
 
+Kassambara. (2018). Regression Model Accuracy Metrics: R-square, AIC, BIC, Cp and more.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieved December 20, 2020 from http://www.sthda.com/english/articles/38-regression-
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  model-validation/158-regression-model-accuracy-metrics-r-square-aic-bic-cp-and-more/
+
 Kassambara, A. (2020). ggpubr: 'ggplot2' Based Publication Ready Plots. R package version 0.4.0.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; https://CRAN.R-project.org/package=ggpubr.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieved December 16, 2020 from  https://CRAN.R-project.org/package=ggpubr.
 
 Party standings. (2019). In CBC News. Retrieved December 5, 2020 from https://newsinteractives.cbc.ca/
 
