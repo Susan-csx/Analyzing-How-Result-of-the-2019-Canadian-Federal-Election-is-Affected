@@ -166,7 +166,7 @@ kable(predicted_prop_by_post, format = "markdown", digits = 3, align = "c", col.
       caption = "The Predicted Proportion of Voters for Liberal Party")
 ```
 
-Based on the 2019 Canadian Election Survey (CES) (Stephenson, Harell, Rubenson & Loewen, 2020) and the 2013 Canadian General Social Surveys (GSS) (Statistics Canada, 2013), ${\hat{y}}^{PS} = \frac{\sum{N_j{\hat{y}_j}}}{\sum{N_j}}$ can be used for calculating the predicted proportion of voters for the Liberal Party, which results in an estimation of **0.269** in Table \@ref(tab:table4) below. That is to say, 26.9% of people are estimated to vote for the Liberal Party after the post-stratification analysis of the proportion of Liberal Party voters modeled by a logistic regression model, which accounted for `Likely_to_Vote`, `Bornin_Canada`, `Education` and `Age`.
+Based on the 2019 Canadian Election Survey (CES) (Stephenson, Harell, Rubenson & Loewen, 2020) and the 2013 Canadian General Social Surveys (GSS) (Statistics Canada, 2013), ${\hat{y}}^{PS} = \frac{\sum{N_j{\hat{y}_j}}}{\sum{N_j}}$ can be used for calculating the predicted proportion of voters for the Liberal Party, which results in an estimation of **0.269** in Table \@ref(tab:table4) below. That is to say, 26.9% of people are estimated to vote for the Liberal Party after the post-stratification analysis of the proportion of Liberal Party voters modelled by a logistic regression model, which accounted for `Likely_to_Vote`, `Bornin_Canada`, `Education` and `Age`.
 
 \newpage
 
@@ -274,7 +274,7 @@ The purpose of this paper is to figure out what factors might influence the resu
 
 ## Conclusions
 
-
+Based on the predicted value returned in the Result Section, 26.9% of people are said to potentially vote for the Liberal Party after the post-stratification analysis of the proportion of Liberal Party voters modelled by a logistic regression model. Different from the actual result in 2019, the low predicted proportion, which is even slower than one third of the Canadian citizens, depicts that the Liberal Party might not win the 2019 Canadian Federal Election if everyone in Canada votes. From the piecharts in Figure \@ref(fig:fig1), a high percentage of people with a University-or-higher degree votes for the Liberal Party, while those who are not graduates from high schools perform a lower vote share for the Liberals. We could related to the claim it made towards Syrian refugees, which might present a larger effect on the life of people with a lower education level since refugees are mainly in a Lower Class, just like those who are not well-educated. Also, the birthplace of the voters also seems to have an significant influence on the vote choices they make. The first two piecharts in Figure \@ref(fig:fig1) suggest that there is a larger proportion of people who were not born in Canada choose the Liberal Party than other parties. One possible reason for this phenomenon might be that those people who were born outside of Canada feel welcomed by the society. However, there are much more Canadians who were born in Canada (86.9%) according to the baseline table \@ref(tab:table2). Hence, people born outside Canada may not help the Liberal Party change the declining tendency in its vote share based on the prediction. Therefore, the estimated result of the likelihood for The Liberals to win the 2019 election if everyone in Canada votes shows a completely opposite result to what actually happned in 2019.
 
 ## Weaknesses
 
@@ -367,6 +367,7 @@ François, R., Henry, L., Müller, K. & Wickham, H. (2020). dplyr: A Grammar of 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; https://CRAN.R-project.org/package=dplyr.
 
 Frost, J. (2020). Multicollinearity in Regression Analysis: Problems, Detection, and Solutions. Retrieved 
+
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; December 20, 2020 from https://statisticsbyjim.com/regression/multicollinearity-in-regression
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -analysis/.
